@@ -1,5 +1,5 @@
 <?php
-require_once "../models/authModel.php";
+require_once "../models/Utilisateur.php";
 require_once "../api/jwt_utils.php";
 
 class AuthController {
@@ -22,7 +22,6 @@ class AuthController {
 
         $payload = [
             "user_id" => $user["id"],
-            "role" => $user["role"],
             "exp" => time() + 3600
         ];
         $secret = "super_secret_key";
