@@ -13,15 +13,11 @@ $response = json_decode(file_get_contents("php://input"), true);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($response["username"]) && isset($response["password"])) {
-        $result = $authController->login($response["username"], $response["password"]);
-        http_response_code($result["status"]);
-        echo json_encode($result);
+        $authController->login($response["username"], $response["password"]);
     } else {
-        http_response_code(400);
-        echo json_encode(["status" => 400, "message" => "Paramètres manquants"]);
+        deliverResponse(401, "Unauthorized", null);
     }
 } else {
-    http_response_code(405);
-    echo json_encode(["status" => 405, "message" => "Méthode non autorisée"]);
+    deliverResponse(405, "Unsupported method", null);
 }
 ?>
