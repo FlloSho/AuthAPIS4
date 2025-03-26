@@ -26,5 +26,11 @@ class AuthController {
             deliverResponse(200, "Connexion réussie", ["token" => $jwt]);
         }
     }
+
+    public function validate_jwt($jwt, $secret) {
+        if (!is_jwt_valid($jwt, $secret)) {
+            deliverResponse(401, "Unauthorized", null);
+        }
+    }
 }
 ?>
