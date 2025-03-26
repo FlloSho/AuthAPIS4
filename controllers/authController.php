@@ -11,23 +11,20 @@ class AuthController {
 
     public function login($username, $password) {
         $user = $this->authModel->getUserByUsername($username);
-
         if (!$user) {
-            deliverResponse(401, "Utilisateur non trouvé", null);
+            deliverResponse(401, "Utilisateur ou mot de passe incorrect", null);
+        } elseif (!password_verify($password, $user['password'])) {
+            deliverResponse(401, "Utilisateur ou mot de passe incorrect!", null);
+        } else {
+            $payload = [
+                "user_id" => $user["id"],
+                "exp" => time() + 3600
+            ];
+            $secret = "super_secret_key";
+            $jwt = generate_jwt(["alg" => "HS256", "typ" => "JWT"], $payload, $secret);
+
+            deliverResponse(200, "Connexion réussie", ["token" => $jwt]);
         }
-
-        if (!password_verify($password, $user['password'])) {
-            deliverResponse(401, "Mot de passe incorrect", null);
-        }
-
-        $payload = [
-            "user_id" => $user["id"],
-            "exp" => time() + 3600
-        ];
-        $secret = "super_secret_key";
-        $jwt = generate_jwt(["alg" => "HS256", "typ" => "JWT"], $payload, $secret);
-
-        deliverResponse(200, "Connexion réussie", ["token" => $jwt]);
     }
 }
 ?>
