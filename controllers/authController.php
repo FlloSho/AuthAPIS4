@@ -13,11 +13,11 @@ class AuthController {
         $user = $this->authModel->getUserByUsername($username);
 
         if (!$user) {
-            return ["status" => 404, "message" => "Utilisateur non trouvé"];
+            deliverResponse(401, "Utilisateur non trouvé", null);
         }
 
         if (!password_verify($password, $user['password'])) {
-            return ["status" => 401, "message" => "Mot de passe incorrect"];
+            deliverResponse(401, "Mot de passe incorrect", null);
         }
 
         $payload = [
@@ -27,7 +27,7 @@ class AuthController {
         $secret = "super_secret_key";
         $jwt = generate_jwt(["alg" => "HS256", "typ" => "JWT"], $payload, $secret);
 
-        return ["status" => 200, "message" => "Connexion réussie", "token" => $jwt];
+        deliverResponse(200, "Connexion réussie", ["token" => $jwt]);
     }
 }
 ?>
