@@ -1,15 +1,29 @@
 <?php
-require_once "../models/Utilisateur.php";
-require_once "../api/jwt_utils.php";
 
-class AuthController {
+use JetBrains\PhpStorm\NoReturn;
+
+require_once "../models/Utilisateur.php";
+require_once "../controllers/jwt_utils.php";
+
+class AuthController
+{
     private $authModel;
 
-    public function __construct($pdo) {
+    public function __construct($pdo)
+    {
         $this->authModel = new AuthModel($pdo);
     }
 
-    public function login($username, $password) {
+    /**
+     * Permet de connecter un utilisateur
+     *
+     * @param string $username
+     * @param string $password
+     *
+     * @return void
+     */
+    public function login(string $username, string $password): void
+    {
         $user = $this->authModel->getUserByUsername($username);
         if (!$user) {
             deliverResponse(401, "Utilisateur ou mot de passe incorrect", null);
@@ -20,17 +34,19 @@ class AuthController {
                 "user_id" => $user["id"],
                 "exp" => time() + 3600
             ];
-            $secret = "super_secret_key";
+            $secret = $_ENV["SECRET"];
             $jwt = generate_jwt(["alg" => "HS256", "typ" => "JWT"], $payload, $secret);
 
             deliverResponse(200, "Connexion réussie", ["token" => $jwt]);
         }
     }
 
-    public function validate_jwt($jwt, $secret) {
-        if (!is_jwt_valid($jwt, $secret)) {
-            deliverResponse(401, "Unauthorized", null);
-        }
+    public function validateToken(): void
+    {
+        $jwt = get_bearer_token();
+        $secret = $_ENV["SECRET"];
+        validate_jwt($jwt, $secret);
     }
 }
+
 ?>

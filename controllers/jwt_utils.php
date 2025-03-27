@@ -1,4 +1,7 @@
 <?php
+
+use JetBrains\PhpStorm\NoReturn;
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -10,7 +13,8 @@ ini_set('display_errors', 1);
  * @param string $secret
  * @return string
  */
-function generate_jwt($headers, $payload, $secret) {
+function generate_jwt($headers, $payload, $secret): string
+{
 	$headers_encoded = base64url_encode(json_encode($headers));
 
 	$payload_encoded = base64url_encode(json_encode($payload));
@@ -73,7 +77,8 @@ function is_jwt_valid($jwt, $secret): bool
  * @param string $data
  * @return string
  */
-function base64url_encode($data) {
+function base64url_encode($data): string
+{
 	return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
 }
 
@@ -82,7 +87,8 @@ function base64url_encode($data) {
  *
  * @return string|null
  */
-function get_authorization_header(){
+function get_authorization_header(): ?string
+{
 	$headers = null;
 
 	if (isset($_SERVER['Authorization'])) {
@@ -107,7 +113,8 @@ function get_authorization_header(){
  *
  * @return string|null
  */
-function get_bearer_token() {
+function get_bearer_token(): ?string
+{
 	$headers = get_authorization_header();
 
 	// HEADER: Get the access token from the header
@@ -129,7 +136,8 @@ function get_bearer_token() {
  * @param string $status_message
  * @param array|null $data
  */
-function deliverResponse($status_code, $status_message, $data = null) {
+function deliverResponse($status_code, $status_message, $data = null): void
+{
 	http_response_code($status_code);
 	echo json_encode([
 		"status" => ($status_code >= 200 && $status_code < 300) ? "success" : "error",
@@ -137,20 +145,6 @@ function deliverResponse($status_code, $status_message, $data = null) {
 		"status_message" => $status_message,
 		"data" => $data
 	]);
-}
-
-/**
- * Fonction qui récupère le rôle d'un utilisateur à partir d'un JWT
- *
- * @param string $jwt
- * @return string
- */
-function get_role_from_jwt($jwt): string
-{
-	$tokenParts = explode('.', $jwt);
-    $payload = base64url_decode($tokenParts[1]);
-    $payload_data = json_decode($payload);
-    return $payload_data->role;
 }
 
 /**
@@ -171,12 +165,16 @@ function base64url_decode(string $int)
  * @param $secret
  * @return void
  */
-function validate_jwt($jwt, $secret) {
+#[NoReturn] function validate_jwt($jwt, $secret): void
+{
     if ($jwt) {
         if (!is_jwt_valid($jwt, $secret)) {
             deliverResponse(401, "Unauthorized", "Token invalide");
             exit();
-        }
+        } else {
+			deliverResponse(200, "Authorized", "Token valide");
+			exit();
+		}
     } else {
         deliverResponse(401, "Unauthorized", "Token manquant");
         exit();

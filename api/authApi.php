@@ -18,13 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $authController = new AuthController($pdo);
 $response = json_decode(file_get_contents("php://input"), true);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($response["username"]) && isset($response["password"])) {
-        $authController->login($response["username"], $response["password"]);
-    } else {
-        deliverResponse(401, "Unauthorized", null);
-    }
-} else {
-    deliverResponse(405, "Unsupported method", null);
+switch ($_SERVER['REQUEST_METHOD']) {
+    case 'GET':
+        $authController->validateToken();
+        break;
+    case 'POST':
+        if (isset($response["username"]) && isset($response["password"])) {
+            $authController->login($response["username"], $response["password"]);
+        } else {
+            deliverResponse(401, "Unauthorized", null);
+        }
+        break;
+    default:
+        deliverResponse(405, "Unsupported method", null);
+        break;
 }
 ?>
