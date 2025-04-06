@@ -1,5 +1,11 @@
 FROM php:8.2-apache
 
+# Définition du répertoire de travail
+WORKDIR /var/www/html
+
+# Copie du code source de l'application dans le conteneur
+COPY . /var/www/html
+
 # Mise à jour et installation des dépendances nécessaires
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -12,5 +18,11 @@ RUN apt-get update && apt-get install -y \
 # Activation de mod_rewrite (souvent utile pour les frameworks PHP comme Laravel)
 RUN a2enmod rewrite
 
-# Définition du répertoire de travail
-WORKDIR /var/www/html
+# Workdir public
+WORKDIR /var/www/html/public
+
+# Expose le port 80
+EXPOSE 80
+
+# cmd
+CMD ["apache2-foreground"]
