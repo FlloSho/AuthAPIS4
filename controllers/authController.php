@@ -34,7 +34,7 @@ class AuthController
                 "user_id" => $user["id"],
                 "exp" => time() + 3600
             ];
-            $secret = $_ENV["SECRET"];
+            $secret = getenv("SECRET");
             $jwt = generate_jwt(["alg" => "HS256", "typ" => "JWT"], $payload, $secret);
 
             deliverResponse(200, "Connexion réussie", ["token" => $jwt]);
