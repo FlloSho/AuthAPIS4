@@ -18,9 +18,6 @@ RUN apt-get update && apt-get install -y \
 # Activation de mod_rewrite (souvent utile pour les frameworks PHP comme Laravel)
 RUN a2enmod rewrite
 
-# Workdir public
-WORKDIR /var/www/html/public
-
 # Expose le port 80
 EXPOSE 80
 
