@@ -1,8 +1,8 @@
 RewriteEngine On
 
-# Si le fichier ou le dossier existe, ne pas réécrire l'URL
+# Si le fichier ou dossier existe, ne rien faire
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Redirige tout vers le fichier authApi.php de ton dossier api/
-RewriteRule ^(.*)$ ../api/authApi.php [QSA,L]
+# Rediriger tout vers index.php (qui lui-même appelle authApi.php)
+RewriteRule ^ index.php [QSA,L]
